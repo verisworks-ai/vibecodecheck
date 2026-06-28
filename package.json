@@ -1,0 +1,18 @@
+{
+  "name": "vibecodecheck",
+  "version": "1.0.0",
+  "description": "Pre-launch site check for vibe-coded MVPs — SEO, AEO, GEO, AI crawler, security in one scan",
+  "type": "module",
+  "bin": {
+    "vibecodecheck": "./bin/vibecodecheck.js"
+  },
+  "main": "./src/audit.js",
+  "scripts": {
+    "check": "node bin/vibecodecheck.js"
+  },
+  "keywords": ["seo", "aeo", "geo", "ai-crawler", "llms-txt", "robots-txt", "vibe-coding", "launch-checklist", "security-txt"],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}

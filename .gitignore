@@ -1,0 +1,4 @@
+node_modules/
+*.md.backup
+*.json.backup
+.DS_Store
