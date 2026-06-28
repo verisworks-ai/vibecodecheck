@@ -1,67 +1,96 @@
 #!/usr/bin/env node
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { audit } from '../src/audit.js';
+import http from 'http';
 
-const server = new Server(
-  { name: 'vibecodecheck', version: '1.0.0' },
-  { capabilities: { tools: {} } }
-);
+const args = process.argv.slice(2);
+const portArg = args.find((a) => a.startsWith('--port='));
+const PORT = portArg ? parseInt(portArg.replace('--port=', ''), 10) : null;
 
-server.setRequestHandler(ListToolsRequestSchema, async () => ({
-  tools: [
-    {
-      name: 'check_site',
-      description:
-        'Run VibecodeCheck pre-launch audit on a URL. ' +
-        'Checks SEO, AEO, GEO, AI crawler access (ClaudeBot, GPTBot, PerplexityBot, etc.), ' +
-        'llms.txt, sitemap, security headers, security.txt, sensitive path exposure, and Schema.org. ' +
-        'Returns a 0-100 score with per-category breakdown and actionable issues.',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          url: {
-            type: 'string',
-            description: 'Full URL to audit, e.g. https://my-mvp.com',
+function createServer() {
+  const server = new Server(
+    { name: 'vibecodecheck', version: '1.0.0' },
+    { capabilities: { tools: {} } }
+  );
+
+  server.setRequestHandler(ListToolsRequestSchema, async () => ({
+    tools: [
+      {
+        name: 'check_site',
+        description:
+          'Run VibecodeCheck pre-launch audit on a URL. ' +
+          'Checks SEO, AEO, GEO, AI crawler access (ClaudeBot, GPTBot, PerplexityBot, etc.), ' +
+          'llms.txt, sitemap, security headers, security.txt, sensitive path exposure, and Schema.org. ' +
+          'Returns a 0-100 score with per-category breakdown and actionable issues.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            url: {
+              type: 'string',
+              description: 'Full URL to audit, e.g. https://my-mvp.com',
+            },
           },
+          required: ['url'],
         },
-        required: ['url'],
       },
-    },
-  ],
-}));
+    ],
+  }));
 
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  if (request.params.name !== 'check_site') {
-    throw new Error(`Unknown tool: ${request.params.name}`);
-  }
+  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    if (request.params.name !== 'check_site') {
+      throw new Error(`Unknown tool: ${request.params.name}`);
+    }
 
-  const { url } = request.params.arguments;
+    const { url } = request.params.arguments;
 
-  try {
-    new URL(url);
-  } catch {
+    try {
+      new URL(url);
+    } catch {
+      return {
+        content: [{ type: 'text', text: `Invalid URL: ${url}` }],
+        isError: true,
+      };
+    }
+
+    let result;
+    try {
+      result = await audit(url);
+    } catch (e) {
+      return {
+        content: [{ type: 'text', text: `Audit failed: ${e.message}` }],
+        isError: true,
+      };
+    }
+
     return {
-      content: [{ type: 'text', text: `Invalid URL: ${url}` }],
-      isError: true,
+      content: [{ type: 'text', text: formatResult(result) }],
     };
-  }
+  });
 
-  let result;
-  try {
-    result = await audit(url);
-  } catch (e) {
-    return {
-      content: [{ type: 'text', text: `Audit failed: ${e.message}` }],
-      isError: true,
-    };
-  }
+  return server;
+}
 
-  return {
-    content: [{ type: 'text', text: formatResult(result) }],
-  };
-});
+if (PORT) {
+  // HTTP mode — for remote/cloud agents (codex-hermes, etc.)
+  const httpServer = http.createServer(async (req, res) => {
+    const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
+    const server = createServer();
+    await server.connect(transport);
+    await transport.handleRequest(req, res);
+  });
+
+  httpServer.listen(PORT, () => {
+    process.stderr.write(`VibecodeCheck MCP server running on http://localhost:${PORT}\n`);
+  });
+} else {
+  // Stdio mode — for Claude Desktop local use
+  const server = createServer();
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+}
 
 function formatResult(result) {
   const grade = scoreGrade(result.score);
@@ -76,9 +105,7 @@ function formatResult(result) {
   for (const [, cat] of Object.entries(result.categories)) {
     const pct = Math.round(((cat.score ?? 0) / cat.maxScore) * 100);
     lines.push(`**${cat.label}**: ${cat.score ?? 0}/${cat.maxScore} (${pct}%)`);
-    if (cat.error) {
-      lines.push(`  ⚠️ Error: ${cat.error}`);
-    }
+    if (cat.error) lines.push(`  ⚠️ Error: ${cat.error}`);
     for (const item of cat.items ?? []) {
       const icon = item.status === 'PASS' ? '✅' : item.status === 'FAIL' ? '❌' : '⚠️';
       lines.push(`  ${icon} ${item.label}`);
@@ -116,6 +143,3 @@ function scoreGrade(score) {
   if (score >= 40) return 'D — significant gaps';
   return 'F — not ready to launch';
 }
-
-const transport = new StdioServerTransport();
-await server.connect(transport);

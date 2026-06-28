@@ -22,6 +22,12 @@
     "launch-checklist",
     "security-txt"
   ],
+  "author": "veris <hello@veris.kr>",
+  "homepage": "https://github.com/veris-lab/vibecodecheck",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/veris-lab/vibecodecheck.git"
+  },
   "license": "MIT",
   "engines": {
     "node": ">=18"
