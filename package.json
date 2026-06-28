@@ -4,15 +4,29 @@
   "description": "Pre-launch site check for vibe-coded MVPs — SEO, AEO, GEO, AI crawler, security in one scan",
   "type": "module",
   "bin": {
-    "vibecodecheck": "./bin/vibecodecheck.js"
+    "vibecodecheck": "./bin/vibecodecheck.js",
+    "vibecodecheck-mcp": "./mcp/server.js"
   },
   "main": "./src/audit.js",
   "scripts": {
     "check": "node bin/vibecodecheck.js"
   },
-  "keywords": ["seo", "aeo", "geo", "ai-crawler", "llms-txt", "robots-txt", "vibe-coding", "launch-checklist", "security-txt"],
+  "keywords": [
+    "seo",
+    "aeo",
+    "geo",
+    "ai-crawler",
+    "llms-txt",
+    "robots-txt",
+    "vibe-coding",
+    "launch-checklist",
+    "security-txt"
+  ],
   "license": "MIT",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0"
   }
 }
