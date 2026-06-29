@@ -1,11 +1,11 @@
 {
-  "name": "vibecodecheck",
-  "version": "1.0.0",
+  "name": "@veris.works/vibecodecheck",
+  "version": "1.0.1",
   "description": "Pre-launch site check for vibe-coded MVPs — SEO, AEO, GEO, AI crawler, security in one scan",
   "type": "module",
   "bin": {
-    "vibecodecheck": "./bin/vibecodecheck.js",
-    "vibecodecheck-mcp": "./mcp/server.js"
+    "vibecodecheck": "bin/vibecodecheck.js",
+    "vibecodecheck-mcp": "mcp/server.js"
   },
   "main": "./src/audit.js",
   "scripts": {
@@ -23,10 +23,10 @@
     "security-txt"
   ],
   "author": "veris <hello@veris.kr>",
-  "homepage": "https://github.com/veris-lab/vibecodecheck",
+  "homepage": "https://github.com/verisworks-ai/vibecodecheck",
   "repository": {
     "type": "git",
-    "url": "https://github.com/veris-lab/vibecodecheck.git"
+    "url": "git+https://github.com/verisworks-ai/vibecodecheck.git"
   },
   "license": "MIT",
   "engines": {
