@@ -1,6 +1,6 @@
 {
   "name": "@veris.works/vibecodecheck",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Pre-launch site check for vibe-coded MVPs — SEO, AEO, GEO, AI crawler, security in one scan",
   "type": "module",
   "bin": {

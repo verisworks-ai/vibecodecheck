@@ -12,11 +12,22 @@ export async function checkSchema(origin) {
     const ldMatches = [...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)];
     const types = new Set();
 
+    const collectTypes = (node) => {
+      if (!node || typeof node !== 'object') return;
+      if (Array.isArray(node)) {
+        node.forEach(collectTypes);
+        return;
+      }
+
+      const t = node['@type'];
+      if (t) (Array.isArray(t) ? t : [t]).forEach((x) => types.add(x));
+
+      if (node['@graph']) collectTypes(node['@graph']);
+    };
+
     for (const m of ldMatches) {
       try {
-        const d = JSON.parse(m[1]);
-        const t = d['@type'];
-        if (t) (Array.isArray(t) ? t : [t]).forEach((x) => types.add(x));
+        collectTypes(JSON.parse(m[1]));
       } catch (_) {}
     }
 
