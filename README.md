@@ -9,6 +9,8 @@
 [![MCP](https://img.shields.io/badge/MCP-stdio%20%7C%20HTTP-blue.svg)](https://modelcontextprotocol.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+[한국어](README.ko.md)
+
 > One command. Five categories. 100-point score. Zero config required.
 
 ---
