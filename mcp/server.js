@@ -8,7 +8,12 @@ import http from 'http';
 
 const args = process.argv.slice(2);
 const portArg = args.find((a) => a.startsWith('--port='));
-const PORT = portArg ? parseInt(portArg.replace('--port=', ''), 10) : null;
+const envPort = process.env.PORT;
+const PORT = portArg
+  ? parseInt(portArg.replace('--port=', ''), 10)
+  : envPort
+    ? parseInt(envPort, 10)
+    : null;
 
 function createServer() {
   const server = new Server(
@@ -21,10 +26,17 @@ function createServer() {
       {
         name: 'check_site',
         description:
-          'Run VibecodeCheck pre-launch audit on a URL. ' +
-          'Checks SEO, AEO, GEO, AI crawler access (ClaudeBot, GPTBot, PerplexityBot, etc.), ' +
-          'llms.txt, sitemap, security headers, security.txt, sensitive path exposure, and Schema.org. ' +
+          'VibecodeCheck URL audit: runs a public pre-launch readiness scan for SEO, AEO, GEO, ' +
+          'AI crawler access (ClaudeBot, GPTBot, PerplexityBot, etc.), llms.txt, sitemap, ' +
+          'security headers, security.txt, sensitive path exposure, and Schema.org. ' +
           'Returns a 0-100 score with per-category breakdown and actionable issues.',
+        annotations: {
+          title: 'VibecodeCheck URL audit',
+          readOnlyHint: true,
+          destructiveHint: false,
+          idempotentHint: false,
+          openWorldHint: true,
+        },
         inputSchema: {
           type: 'object',
           properties: {

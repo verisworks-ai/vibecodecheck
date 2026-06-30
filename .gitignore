@@ -2,3 +2,5 @@ node_modules/
 *.md.backup
 *.json.backup
 .DS_Store
+reports/
+assets/playmcp-icon/gpt-img2_*.png

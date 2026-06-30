@@ -31,7 +31,9 @@ if (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1' || parsed
   console.warn(`  ⚠️  Warning: scanning private/local address. Results reflect local environment only.\n`);
 }
 
-console.log(`\n  VibecodeCheck scanning ${url} ...\n`);
+if (!outputJson) {
+  console.log(`\n  VibecodeCheck scanning ${url} ...\n`);
+}
 
 const result = await audit(url);
 
@@ -45,8 +47,10 @@ if (outputMd || mdFile) {
   const md = toMarkdown(result);
   const outPath = mdFile || resolve(process.cwd(), `vibecodecheck-${parsed.hostname}-${Date.now()}.md`);
   writeFileSync(outPath, md);
-  console.log(`  Report saved: ${outPath}`);
+  if (!outputJson) console.log(`  Report saved: ${outPath}`);
 }
 
-console.log(toConsole(result));
+if (!outputJson) {
+  console.log(toConsole(result));
+}
 process.exit(result.score < 40 ? 1 : 0);

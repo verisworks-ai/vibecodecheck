@@ -4,7 +4,7 @@
 
 `vibecodecheck` scans any URL and tells you exactly what is missing before you launch.
 
-[![npm](https://img.shields.io/npm/v/vibecodecheck.svg)](https://www.npmjs.com/package/vibecodecheck)
+[![npm](https://img.shields.io/npm/v/@veris.works/vibecodecheck.svg)](https://www.npmjs.com/package/@veris.works/vibecodecheck)
 [![Node 18+](https://img.shields.io/badge/node-18+-green.svg)](https://nodejs.org)
 [![MCP](https://img.shields.io/badge/MCP-stdio%20%7C%20HTTP-blue.svg)](https://modelcontextprotocol.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -61,18 +61,18 @@ Total                                                                       100
 ### CLI
 
 ```bash
-npx vibecodecheck https://your-mvp.com
+npx --yes --package=@veris.works/vibecodecheck vibecodecheck https://your-mvp.com
 ```
 
 ```bash
 # Save markdown report
-npx vibecodecheck https://your-mvp.com --md
+npx --yes --package=@veris.works/vibecodecheck vibecodecheck https://your-mvp.com --md
 
 # Save to specific file
-npx vibecodecheck https://your-mvp.com --out=report.md
+npx --yes --package=@veris.works/vibecodecheck vibecodecheck https://your-mvp.com --out=report.md
 
 # JSON output (for CI pipelines)
-npx vibecodecheck https://your-mvp.com --json
+npx --yes --package=@veris.works/vibecodecheck vibecodecheck https://your-mvp.com --json
 ```
 
 Exit code `1` when score < 40 — CI-friendly gate.
@@ -86,7 +86,7 @@ Add to `claude_desktop_config.json`:
   "mcpServers": {
     "vibecodecheck": {
       "command": "npx",
-      "args": ["-y", "vibecodecheck-mcp"]
+      "args": ["--yes", "--package=@veris.works/vibecodecheck", "vibecodecheck-mcp"]
     }
   }
 }
@@ -97,7 +97,7 @@ Then ask Claude: *"Check if my site is ready to launch"* — Claude calls `check
 ### MCP — Remote / Cloud Agents (codex-hermes, etc.)
 
 ```bash
-npx vibecodecheck-mcp --port=3000
+npx --yes --package=@veris.works/vibecodecheck vibecodecheck-mcp --port=3000
 ```
 
 Connect any MCP-compatible agent to `http://localhost:3000`. Uses StreamableHTTP transport.
@@ -143,7 +143,7 @@ Connect any MCP-compatible agent to `http://localhost:3000`. Uses StreamableHTTP
 ### Before launch — catch the silent blockers
 
 ```bash
-npx vibecodecheck https://my-mvp.com
+npx --yes --package=@veris.works/vibecodecheck vibecodecheck https://my-mvp.com
 ```
 
 Catches missing llms.txt, blocked AI bots, no sitemap, exposed .env paths — before users or search engines notice.
@@ -152,7 +152,7 @@ Catches missing llms.txt, blocked AI bots, no sitemap, exposed .env paths — be
 
 ```yaml
 - name: Vibecodecheck
-  run: npx vibecodecheck https://staging.my-mvp.com --json
+  run: npx --yes --package=@veris.works/vibecodecheck vibecodecheck https://staging.my-mvp.com --json
   # exits 1 if score < 40
 ```
 
@@ -166,8 +166,8 @@ Claude runs the audit and returns prioritized fix steps with explanations.
 
 ```text
 vibecodecheck/
-├── bin/vibecodecheck.js      ← CLI entry (npx vibecodecheck)
-├── mcp/server.js             ← MCP server: stdio + HTTP (npx vibecodecheck-mcp)
+├── bin/vibecodecheck.js      ← CLI entry (npx --yes --package=@veris.works/vibecodecheck vibecodecheck)
+├── mcp/server.js             ← MCP server: stdio + HTTP (npx --yes --package=@veris.works/vibecodecheck vibecodecheck-mcp)
 ├── src/
 │   ├── audit.js              ← orchestrator (parallel Promise.allSettled)
 │   ├── checks/               ← 10 independent check modules

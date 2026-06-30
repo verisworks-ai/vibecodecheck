@@ -29,7 +29,7 @@ export function toMarkdown(result) {
   }
 
   lines.push(`---`);
-  lines.push(`*VibecodeCheck — MIT open-source. No AI layer used in this scan. npx vibecodecheck*`);
+  lines.push(`*VibecodeCheck — MIT open-source. No AI layer used in this scan. npx --yes --package=@veris.works/vibecodecheck vibecodecheck*`);
 
   return lines.join('\n');
 }
@@ -47,7 +47,8 @@ export function toConsole(result) {
 
   for (const [, cat] of Object.entries(result.categories)) {
     const pct = Math.round(((cat.score ?? 0) / cat.maxScore) * 100);
-    const bar = '█'.repeat(Math.round(pct / 10)) + '░'.repeat(10 - Math.round(pct / 10));
+    const filled = Math.max(0, Math.min(10, Math.round(pct / 10)));
+    const bar = '█'.repeat(filled) + '░'.repeat(10 - filled);
     lines.push(`  ${cat.label.padEnd(24)} ${bar} ${cat.score ?? 0}/${cat.maxScore}`);
   }
 
