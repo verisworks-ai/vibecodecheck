@@ -1,17 +1,22 @@
+<p align="center">
+  <img src=".github/assets/vibecodecheck-logo.svg" alt="vibecodecheck" width="640">
+</p>
+
+<p align="center">
+  <a href="README.md">English</a>
+</p>
+
+<p align="center">
+  <img src=".github/assets/vibecodecheck-hero.svg" alt="vibecodecheck repository overview" width="960">
+</p>
+
 # vibecodecheck
 
-**바이브코딩으로 MVP를 빠르게 만들었다면, 검색엔진과 AI가 그 사이트를 제대로 읽을 수 있는지 확인해야 한다.**
+검색엔진, AI 크롤러, 보안 헤더를 출시 전에 점검하는 공개 URL 감사 도구입니다.
 
-`vibecodecheck`는 URL 하나로 robots.txt, llms.txt, 사이트맵, 보안 헤더, AI 크롤러 접근성을 한 번에 점검하고 0–100점 리포트를 반환한다.
-
-[![npm](https://img.shields.io/npm/v/@veris.works/vibecodecheck.svg)](https://www.npmjs.com/package/@veris.works/vibecodecheck)
-[![Node 18+](https://img.shields.io/badge/node-18+-green.svg)](https://nodejs.org)
-[![MCP](https://img.shields.io/badge/MCP-stdio%20%7C%20HTTP-blue.svg)](https://modelcontextprotocol.io)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-[English](README.md)
-
----
+```text
+vibecodecheck = pre-launch readiness check for search engines + AI crawlers + security
+```
 
 ## 한 줄 요약
 

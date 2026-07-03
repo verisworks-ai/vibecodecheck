@@ -1,17 +1,32 @@
+<p align="center">
+  <img src=".github/assets/vibecodecheck-logo.svg" alt="vibecodecheck" width="640">
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@veris.works/vibecodecheck"><img alt="npm" src="https://img.shields.io/npm/v/@veris.works/vibecodecheck.svg"></a>
+  <a href="https://nodejs.org"><img alt="Node 18+" src="https://img.shields.io/badge/node-18+-green.svg"></a>
+  <a href="https://modelcontextprotocol.io"><img alt="MCP" src="https://img.shields.io/badge/MCP-stdio%20%7C%20HTTP-blue.svg"></a>
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
+</p>
+
+<p align="center">
+  <a href="README.ko.md">한국어</a> ·
+  <a href="#usage">Usage</a> ·
+  <a href="#what-it-checks">What it checks</a> ·
+  <a href="#security-boundary">Security boundary</a>
+</p>
+
+<p align="center">
+  <img src=".github/assets/vibecodecheck-hero.svg" alt="vibecodecheck repository overview" width="960">
+</p>
+
 # vibecodecheck
 
-**Vibe-coded MVPs ship fast. Search engines and AI crawlers still need robots.txt, llms.txt, sitemap, security headers, and correct bot policies — and they are easy to forget.**
+**Vibe-coded MVPs ship fast. Search engines and AI crawlers still need robots.txt, llms.txt, sitemap, security headers, and correct bot policies.**
 
-`vibecodecheck` scans any URL and tells you exactly what is missing before you launch.
+`vibecodecheck` scans a public URL for launch blockers across search, AI crawler access, answer-engine files, and safety boundaries.
 
-[![npm](https://img.shields.io/npm/v/@veris.works/vibecodecheck.svg)](https://www.npmjs.com/package/@veris.works/vibecodecheck)
-[![Node 18+](https://img.shields.io/badge/node-18+-green.svg)](https://nodejs.org)
-[![MCP](https://img.shields.io/badge/MCP-stdio%20%7C%20HTTP-blue.svg)](https://modelcontextprotocol.io)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-[한국어](README.ko.md)
-
-> One command. Five categories. 100-point score. Zero config required.
+> One command. Structured evidence. Safer agent and launch workflows.
 
 ---
 
@@ -187,7 +202,7 @@ vibecodecheck/
 │       └── fetch.js          ← fetchWithTimeout (10s, AbortController)
 ```
 
-## Security
+## Security boundary
 
 - All fetch calls have a 10-second timeout (AbortController)
 - `--out=` restricted to current directory (no path traversal)
