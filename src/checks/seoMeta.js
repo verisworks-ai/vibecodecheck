@@ -1,4 +1,4 @@
-import { fetchWithTimeout } from '../utils/fetch.js';
+import { fetchWithTimeout, readBodyWithLimit } from '../utils/fetch.js';
 
 export async function checkSeoMeta(origin) {
   const items = [];
@@ -7,11 +7,12 @@ export async function checkSeoMeta(origin) {
 
   try {
     const res = await fetchWithTimeout(origin, { headers: { 'User-Agent': 'vibecodecheck/1.0' } });
-    const html = await res.text();
+    const html = await readBodyWithLimit(res);
     const xRobots = res.headers.get('x-robots-tag') || '';
 
+    const sanitize = (s) => s.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, '').trim();
     const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
-    const title = titleMatch ? titleMatch[1].trim().replace(/\s+/g, ' ') : '';
+    const title = titleMatch ? sanitize(titleMatch[1].replace(/\s+/g, ' ')) : '';
     if (title && title.length >= 5) {
       score += 2;
       items.push({ id: 'title', status: 'PASS', label: `title: "${title.slice(0, 60)}"` });

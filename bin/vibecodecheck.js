@@ -8,13 +8,16 @@ const args = process.argv.slice(2);
 const url = args.find((a) => a.startsWith('http'));
 const outputJson = args.includes('--json');
 const outputMd = args.includes('--md');
+const ciMode = args.includes('--ci');
 const rawOut = args.find((a) => a.startsWith('--out='))?.replace('--out=', '');
+const minScoreArg = args.find((a) => a.startsWith('--min-score='));
+const minScore = minScoreArg ? parseInt(minScoreArg.replace('--min-score=', ''), 10) : 40;
 
 // Restrict --out= to filename only (no path traversal outside cwd)
 const mdFile = rawOut ? resolve(process.cwd(), basename(rawOut)) : null;
 
 if (!url) {
-  console.error('Usage: vibecodecheck <url> [--json] [--md] [--out=report.md]');
+  console.error('Usage: vibecodecheck <url> [--json] [--md] [--out=report.md] [--ci] [--min-score=N]');
   process.exit(1);
 }
 
@@ -50,7 +53,14 @@ if (outputMd || mdFile) {
   if (!outputJson) console.log(`  Report saved: ${outPath}`);
 }
 
+if (ciMode) {
+  const passed = result.score >= minScore;
+  const out = { score: result.score, minScore, passed, url: result.url };
+  console.log(JSON.stringify(out));
+  process.exit(passed ? 0 : 1);
+}
+
 if (!outputJson) {
   console.log(toConsole(result));
 }
-process.exit(result.score < 40 ? 1 : 0);
+process.exit(result.score < minScore ? 1 : 0);

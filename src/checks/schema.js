@@ -1,4 +1,4 @@
-import { fetchWithTimeout } from '../utils/fetch.js';
+import { fetchWithTimeout, readBodyWithLimit } from '../utils/fetch.js';
 
 export async function checkSchema(origin) {
   const items = [];
@@ -7,7 +7,7 @@ export async function checkSchema(origin) {
 
   try {
     const res = await fetchWithTimeout(origin, { headers: { 'User-Agent': 'vibecodecheck/1.0' } });
-    const html = await res.text();
+    const html = await readBodyWithLimit(res);
 
     const ldMatches = [...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)];
     const types = new Set();
