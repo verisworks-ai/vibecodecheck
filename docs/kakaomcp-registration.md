@@ -89,10 +89,10 @@ check_site              Audit a public URL before launch
 
 ```text
 Discoverability         robots.txt and sitemap readiness
-AI crawler access       ClaudeBot, GPTBot, PerplexityBot, Google-Extended, CCBot rules
-Answer engine content   llms.txt, llms-full.txt, Schema.org, RSS/feed hints
-Technical SEO           title, meta description, canonical, Open Graph, Twitter card
-Safety boundary         security headers, security.txt, sensitive path exposure
+AI crawler access       13 AI/search crawler user-agent probes
+Answer engine content   llms.txt, llms-full.txt, Schema.org, AEO schema, RSS/feed hints
+Technical SEO           title, meta description, canonical, Open Graph, Twitter card, noindex
+Safety boundary         security headers, security.txt, sensitive path exposure, bundle secret scan
 ```
 
 ## Safety model
@@ -127,7 +127,7 @@ Pre-launch URL audit MCP for vibe-coded MVPs. It checks whether search engines a
 
 ```bash
 npm view @veris.works/vibecodecheck name version bin --json
-npx --yes --package=@veris.works/vibecodecheck vibecodecheck https://secpay.veris.kr --json
+npx --yes --package=@veris.works/vibecodecheck vibecodecheck https://example.com --json
 npx --yes --package=@veris.works/vibecodecheck vibecodecheck-mcp
 ```
 
@@ -137,7 +137,7 @@ Then run `tools/list` in the target MCP client and verify `check_site` appears w
 
 ```bash
 npm install
-node bin/vibecodecheck.js https://secpay.veris.kr --json
+node bin/vibecodecheck.js https://example.com --json
 node /tmp/vibecodecheck-mcp-smoke.mjs
 PORT=3333 node mcp/server.js
 node /tmp/vibecodecheck-mcp-http-smoke.mjs

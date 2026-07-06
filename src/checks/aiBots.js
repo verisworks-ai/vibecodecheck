@@ -9,13 +9,17 @@ const AI_BOTS = [
   { name: 'Google-Extended', ua: 'Google-Extended/1.0', category: 'ai-training' },
   { name: 'GrokBot', ua: 'Grok/1.0', category: 'ai-answer' },
   { name: 'BraveBot', ua: 'Brave/1.0', category: 'ai-search' },
+  { name: 'Amazonbot', ua: 'Amazonbot/0.1', category: 'ai-answer' },
+  { name: 'Bytespider', ua: 'Bytespider/1.0', category: 'ai-training' },
+  { name: 'cohere-ai', ua: 'cohere-ai/1.0', category: 'ai-answer' },
+  { name: 'meta-externalagent', ua: 'meta-externalagent/1.1', category: 'ai-answer' },
+  { name: 'Applebot', ua: 'Applebot/0.1', category: 'ai-search' },
 ];
 
 export async function checkAiBots(origin) {
   const items = [];
-  let score = 0;
+  let passCount = 0;
   const maxScore = 25;
-  const perBot = Math.floor(maxScore / AI_BOTS.length);
 
   await Promise.all(
     AI_BOTS.map(async (bot) => {
@@ -26,7 +30,7 @@ export async function checkAiBots(origin) {
         });
         const ok = res.ok || res.status === 301 || res.status === 302;
         if (ok) {
-          score += perBot;
+          passCount++;
           items.push({ id: `bot-${bot.name}`, status: 'PASS', label: `${bot.name} → ${res.status}` });
         } else {
           items.push({ id: `bot-${bot.name}`, status: 'FAIL', label: `${bot.name} → ${res.status} (blocked)` });
@@ -37,6 +41,6 @@ export async function checkAiBots(origin) {
     })
   );
 
-  score = Math.min(score, maxScore);
+  const score = Math.round((passCount / AI_BOTS.length) * maxScore);
   return { score, maxScore, items };
 }

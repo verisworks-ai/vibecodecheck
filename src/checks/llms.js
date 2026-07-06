@@ -31,6 +31,17 @@ export async function checkLlms(origin) {
       } else {
         items.push({ id: 'llms-commercial-use', status: 'WARN', label: 'llms.txt missing commercial-use declaration' });
       }
+
+      // Content quality: H1 title + at least one ## section link
+      const hasH1 = /^#\s+\S/m.test(text);
+      const hasSections = /^##\s+/m.test(text);
+      if (hasH1 && hasSections) {
+        items.push({ id: 'llms-content-quality', status: 'PASS', label: 'llms.txt has H1 title and section links' });
+      } else if (hasH1) {
+        items.push({ id: 'llms-content-quality', status: 'WARN', label: 'llms.txt has H1 but no ## section links — add key page links' });
+      } else {
+        items.push({ id: 'llms-content-quality', status: 'WARN', label: 'llms.txt missing H1 title — AI models may skip it' });
+      }
     } else {
       items.push({ id: 'llms-exists', status: 'FAIL', label: `llms.txt not found (${res.status})` });
     }

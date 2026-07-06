@@ -58,15 +58,17 @@ These are not hard to fix — but they are invisible until something breaks. `vi
 Category               Checks                                            Max Score
 ─────────────────────────────────────────────────────────────────────────────────
 Discoverability        robots.txt, sitemap.xml, RSS/Atom feed               25
-AI Crawler Access      ClaudeBot, GPTBot, ChatGPT-User, OAI-SearchBot,      25
-                       PerplexityBot, Google-Extended, GrokBot, BraveBot
+AI Crawler Access      13 crawler user agents: ClaudeBot, GPTBot,           25
+                       ChatGPT-User, OAI-SearchBot, PerplexityBot,
+                       Google-Extended, GrokBot, BraveBot, Amazonbot,
+                       Bytespider, cohere-ai, meta-externalagent, Applebot
 Answer Engine          llms.txt, llms-full.txt, Schema.org JSON-LD,         20
-Content                og:title, og:description
+Content                AEO schema types, og:title, og:description
 Technical SEO          HTTPS, HEAD compatibility (Bing), security           15
-                       headers (X-Content-Type-Options, X-Frame-Options,
-                       Referrer-Policy), meta title/description, canonical
-Safety Boundary        .env, .git/config, /admin exposure check,            15
-                       security.txt (Contact + Expires)
+                       headers, title/description, canonical, viewport,
+                       og:image, twitter:card, noindex detection
+Safety Boundary        .env, .git/config, /admin, /graphql, OpenAPI/Swagger 15
+                       exposure checks, bundle secret scan, security.txt
 ─────────────────────────────────────────────────────────────────────────────────
 Total                                                                       100
 ```
@@ -186,7 +188,7 @@ vibecodecheck/
 ├── src/
 │   ├── audit.js              ← orchestrator (parallel Promise.allSettled)
 │   ├── checks/               ← 10 independent check modules
-│   │   ├── aiBots.js         ← 8 AI crawlers, UA simulation
+│   │   ├── aiBots.js         ← 13 AI crawlers, UA simulation
 │   │   ├── feed.js           ← RSS/Atom feed detection
 │   │   ├── headers.js        ← HTTPS, HEAD, security headers
 │   │   ├── llms.js           ← llms.txt + llms-full.txt

@@ -7,9 +7,17 @@
     "vibecodecheck": "bin/vibecodecheck.js",
     "vibecodecheck-mcp": "mcp/server.js"
   },
+  "files": [
+    "bin/",
+    "mcp/",
+    "src/",
+    "README.md",
+    "README.ko.md"
+  ],
   "main": "./src/audit.js",
   "scripts": {
-    "check": "node bin/vibecodecheck.js"
+    "check": "node bin/vibecodecheck.js",
+    "test": "node --test"
   },
   "keywords": [
     "seo",

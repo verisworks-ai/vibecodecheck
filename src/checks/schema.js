@@ -44,6 +44,21 @@ export async function checkSchema(origin) {
       ['BreadcrumbList', 'breadcrumb-schema'],
     ];
 
+    // AEO/GEO bonus: higher-value types for answer engines
+    const AEO_TYPES = [
+      ['Organization', 'org-schema'],
+      ['SoftwareApplication', 'software-app-schema'],
+      ['HowTo', 'howto-schema'],
+      ['Product', 'product-schema'],
+    ];
+    const aeoFound = AEO_TYPES.filter(([type]) => types.has(type));
+    if (aeoFound.length > 0) {
+      score += Math.min(2, aeoFound.length);
+      aeoFound.forEach(([type, id]) => {
+        items.push({ id, status: 'PASS', label: `${type} schema present (AEO boost)` });
+      });
+    }
+
     for (const [type, id] of VALUE_TYPES) {
       if (types.has(type)) {
         score += 2;
@@ -73,5 +88,5 @@ export async function checkSchema(origin) {
     items.push({ id: 'schema-fetch', status: 'FAIL', label: `Schema check failed: ${e.message}` });
   }
 
-  return { score, maxScore, items };
+  return { score: Math.min(score, maxScore), maxScore, items };
 }
