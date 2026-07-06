@@ -93,6 +93,12 @@ npx --yes --package=@veris.works/vibecodecheck vibecodecheck https://your-mvp.co
 
 # CI gate — exit 1 if score < 70
 npx --yes --package=@veris.works/vibecodecheck vibecodecheck https://your-mvp.com --ci --min-score=70
+
+# Generate missing files (robots.txt, llms.txt, security.txt) into ./public
+npx --yes --package=@veris.works/vibecodecheck vibecodecheck-fix https://your-mvp.com --out=public
+
+# Dry-run: show what would be written without writing
+npx --yes --package=@veris.works/vibecodecheck vibecodecheck-fix https://your-mvp.com --dry-run
 ```
 
 Exit code `1` when score < threshold. Default threshold: 40. Use `--ci --min-score=N` to set a custom gate.

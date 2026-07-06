@@ -5,6 +5,7 @@
   "type": "module",
   "bin": {
     "vibecodecheck": "bin/vibecodecheck.js",
+    "vibecodecheck-fix": "bin/fix.js",
     "vibecodecheck-mcp": "mcp/server.js"
   },
   "files": [
