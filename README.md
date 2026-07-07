@@ -33,7 +33,7 @@
 ## One-line result
 
 ```text
-vibecodecheck = pre-launch readiness check for search engines + AI crawlers + security
+vibecodecheck = pre-launch readiness check for search engines + AI crawlers + security + performance
 ```
 
 ## Why this exists
@@ -48,6 +48,12 @@ llms.txt missing                      Claude, ChatGPT cannot cite your content
 GPTBot blocked                        ChatGPT never learns your site exists
 .env exposed at /.env                 Credentials leak to anyone who looks
 security.txt missing                  Security researchers cannot contact you
+SSL cert expiring in 7 days           Site goes down without warning
+Cookie missing HttpOnly flag          XSS can steal session tokens
+TTFB > 1500ms                         Users bounce before page loads
+/api/me returns 200 unauthenticated   User data exposed to anyone
+package.json publicly accessible      Dependency versions fingerprinted
+SPF / DMARC missing                   Your domain can be spoofed in phishing
 ```
 
 These are not hard to fix — but they are invisible until something breaks. `vibecodecheck` catches them before launch.
@@ -57,18 +63,25 @@ These are not hard to fix — but they are invisible until something breaks. `vi
 ```text
 Category               Checks                                            Max Score
 ─────────────────────────────────────────────────────────────────────────────────
-Discoverability        robots.txt, sitemap.xml, RSS/Atom feed               25
-AI Crawler Access      13 crawler user agents: ClaudeBot, GPTBot,           25
+Discoverability        robots.txt, sitemap.xml, RSS/Atom feed,              20
+                       SPF / DKIM / DMARC (email infra via DNS)
+AI Crawler Access      13 crawler user agents: ClaudeBot, GPTBot,           20
                        ChatGPT-User, OAI-SearchBot, PerplexityBot,
                        Google-Extended, GrokBot, BraveBot, Amazonbot,
                        Bytespider, cohere-ai, meta-externalagent, Applebot
-Answer Engine          llms.txt, llms-full.txt, Schema.org JSON-LD,         20
+Answer Engine          llms.txt, llms-full.txt, Schema.org JSON-LD,         15
 Content                AEO schema types, og:title, og:description
 Technical SEO          HTTPS, HEAD compatibility (Bing), security           15
                        headers, title/description, canonical, viewport,
                        og:image, twitter:card, noindex detection
 Safety Boundary        .env, .git/config, /admin, /graphql, OpenAPI/Swagger 15
-                       exposure checks, bundle secret scan, security.txt
+                       exposure checks, bundle secret scan, security.txt,
+                       package.json/requirements.txt/Gemfile exposure
+Launch Readiness       SSL cert expiry, HTTP→HTTPS redirect, HSTS max-age,  15
+                       cookie Secure/HttpOnly/SameSite flags, CORS policy,
+                       unprotected auth paths, TTFB, gzip/brotli, cache
+                       headers, rate-limit headers, 404/500 error handling,
+                       stack trace / internal path leak detection
 ─────────────────────────────────────────────────────────────────────────────────
 Total                                                                       100
 ```
@@ -136,22 +149,22 @@ Connect any MCP-compatible agent to `http://localhost:3000`. Uses StreamableHTTP
   VibecodeCheck
   https://your-mvp.com
 
-  Score: 83/100  B — mostly ready
+  Score: 88/100  B — mostly ready
 
-  Discoverability          ██████████ 25/25
-  AI Crawler Access        ██████████ 24/25
-  Answer Engine Content    ████░░░░░░  8/20
+  Discoverability          ███████░░░ 14/20
+  AI Crawler Access        ██████████ 20/20
+  Answer Engine Content    ██████████ 15/15
   Technical SEO            ██████████ 15/15
-  Safety Boundary          ███████░░░ 11/15
+  Safety Boundary          ██████████ 15/15
+  Launch Readiness         █████████░ 14/15
 
-  ❌ Issues (4)
-     • No Schema.org JSON-LD found
-     • FAQPage schema missing
-     • Article schema missing
-     • security.txt not found
+  ❌ Issues (2)
+     • DMARC record missing — email spoofing risk
+     • TTFB avg: 891ms (slow, target <600ms)
 
-  ⚠️  Warnings (1)
+  ⚠️  Warnings (2)
      • llms-full.txt not found (optional)
+     • No rate-limit headers detected on homepage
 ```
 
 ## Score grades
