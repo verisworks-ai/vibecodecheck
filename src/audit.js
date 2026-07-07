@@ -8,10 +8,17 @@ import { checkSensitivePaths } from './checks/sensitivePaths.js';
 import { checkSchema } from './checks/schema.js';
 import { checkSeoMeta } from './checks/seoMeta.js';
 import { checkSecurityTxt } from './checks/securityTxt.js';
+import { checkSSLDeep } from './checks/checkSSLDeep.js';
+import { checkAuthProtection } from './checks/checkAuthProtection.js';
+import { checkPerformance } from './checks/checkPerformance.js';
+import { checkErrorPages } from './checks/checkErrorPages.js';
+import { checkEmailInfra } from './checks/checkEmailInfra.js';
+import { checkDependencyExposure } from './checks/checkDependencyExposure.js';
 
 export async function audit(targetUrl) {
   const base = new URL(targetUrl);
   const origin = base.origin;
+  const hostname = base.hostname;
 
   const results = {
     url: targetUrl,
@@ -21,38 +28,47 @@ export async function audit(targetUrl) {
     maxScore: 100,
   };
 
-  const [robots, sitemap, feed, llms, aiBots, headers, sensitivePaths, schema, seoMeta, securityTxt] =
-    await Promise.allSettled([
-      checkRobots(origin),
-      checkSitemap(origin),
-      checkFeed(origin),
-      checkLlms(origin),
-      checkAiBots(origin),
-      checkHeaders(origin),
-      checkSensitivePaths(origin),
-      checkSchema(origin),
-      checkSeoMeta(origin),
-      checkSecurityTxt(origin),
-    ]);
+  const [
+    robots, sitemap, feed, llms, aiBots, headers, sensitivePaths,
+    schema, seoMeta, securityTxt,
+    sslDeep, authProtection, performance, errorPages, emailInfra, depExposure,
+  ] = await Promise.allSettled([
+    checkRobots(origin),
+    checkSitemap(origin),
+    checkFeed(origin),
+    checkLlms(origin),
+    checkAiBots(origin),
+    checkHeaders(origin),
+    checkSensitivePaths(origin),
+    checkSchema(origin),
+    checkSeoMeta(origin),
+    checkSecurityTxt(origin),
+    checkSSLDeep(origin),
+    checkAuthProtection(origin),
+    checkPerformance(origin),
+    checkErrorPages(origin),
+    checkEmailInfra(hostname),
+    checkDependencyExposure(origin),
+  ]);
 
   const unwrap = (r) => (r.status === 'fulfilled' ? r.value : { score: 0, maxScore: 0, items: [], error: r.reason?.message });
 
   results.categories.discoverability = {
     label: 'Discoverability',
-    maxScore: 25,
-    ...mergeCategory([unwrap(robots), unwrap(sitemap), unwrap(feed)], 25),
+    maxScore: 20,
+    ...mergeCategory([unwrap(robots), unwrap(sitemap), unwrap(feed), unwrap(emailInfra)], 20),
   };
 
   results.categories.aiCrawlerAccess = {
     label: 'AI Crawler Access',
-    maxScore: 25,
-    ...unwrap(aiBots),
+    maxScore: 20,
+    ...mergeCategory([unwrap(aiBots)], 20),
   };
 
   results.categories.answerEngineContent = {
     label: 'Answer Engine Content',
-    maxScore: 20,
-    ...mergeCategory([unwrap(llms), unwrap(schema)], 20),
+    maxScore: 15,
+    ...mergeCategory([unwrap(llms), unwrap(schema)], 15),
   };
 
   results.categories.technicalSeo = {
@@ -64,7 +80,13 @@ export async function audit(targetUrl) {
   results.categories.safetyBoundary = {
     label: 'Safety Boundary',
     maxScore: 15,
-    ...mergeCategory([unwrap(sensitivePaths), unwrap(securityTxt)], 15),
+    ...mergeCategory([unwrap(sensitivePaths), unwrap(securityTxt), unwrap(depExposure)], 15),
+  };
+
+  results.categories.launchReadiness = {
+    label: 'Launch Readiness',
+    maxScore: 15,
+    ...mergeCategory([unwrap(sslDeep), unwrap(authProtection), unwrap(performance), unwrap(errorPages)], 15),
   };
 
   results.score = Object.values(results.categories).reduce((s, c) => s + (c.score || 0), 0);
