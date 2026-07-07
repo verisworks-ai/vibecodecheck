@@ -26,13 +26,39 @@ jobs:
       - name: Dependency audit
         run: npm audit --audit-level=high
 
-      - name: Score sum assertion
+      - name: Score integrity check
         run: |
           node -e "
-            import('./src/audit.js').then(m => {
-              const cats = [25, 25, 20, 15, 15];
-              const sum = cats.reduce((a,b) => a+b, 0);
-              if (sum !== 100) { console.error('maxScore sum !== 100:', sum); process.exit(1); }
-              console.log('maxScore sum:', sum, '✓');
+            import('./src/audit.js').then(async ({ audit }) => {
+              // Dry-run audit against a placeholder to extract category structure
+              // We import the module and check maxScore is defined per category
+              // by running a real audit against httpbin (reliable, no crawlers)
+              const res = await audit('https://httpbin.org');
+              const cats = Object.values(res.categories);
+              const sum = cats.reduce((s, c) => s + (c.maxScore || 0), 0);
+              const labels = cats.map(c => c.label);
+              if (sum !== 100) {
+                console.error('maxScore sum !== 100:', sum, '  categories:', labels);
+                process.exit(1);
+              }
+              console.log('maxScore sum: 100 ✓');
+              console.log('categories:', labels.join(', '));
+            });
+          "
+
+      - name: README category sync check
+        run: |
+          node -e "
+            import('./src/audit.js').then(async ({ audit }) => {
+              const res = await audit('https://httpbin.org');
+              const labels = Object.values(res.categories).map(c => c.label);
+              const readme = require('fs').readFileSync('README.md', 'utf8');
+              const missing = labels.filter(l => !readme.includes(l));
+              if (missing.length > 0) {
+                console.error('::error::README.md missing category labels:', missing.join(', '));
+                console.error('Update the What it checks section when adding new categories.');
+                process.exit(1);
+              }
+              console.log('README category sync: all', labels.length, 'categories present ✓');
             });
           "
