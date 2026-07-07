@@ -6,6 +6,11 @@ on:
   pull_request:
 
 jobs:
+  security:
+    uses: verisworks-ai/.github/.github/workflows/security-baseline.yml@main
+    with:
+      language: node
+
   test:
     runs-on: ubuntu-latest
     steps:
@@ -21,29 +26,10 @@ jobs:
       - name: Dependency audit
         run: npm audit --audit-level=high
 
-      - name: Credential scan
-        run: |
-          if grep -rn --include="*.js" --include="*.json" \
-            -E "(ghp_[A-Za-z0-9]{36}|sk-[A-Za-z0-9]{20,}|AIza[A-Za-z0-9_-]{35})" \
-            bin/ src/ mcp/ 2>/dev/null; then
-            echo "::error::Credential pattern found in source"
-            exit 1
-          fi
-
-      - name: Personal info scan
-        run: |
-          if grep -rn --include="*.js" --include="*.json" --include="*.md" \
-            -E "/Users/[a-zA-Z]+" \
-            bin/ src/ mcp/ README.md 2>/dev/null; then
-            echo "::error::Local user path found in tracked files"
-            exit 1
-          fi
-
       - name: Score sum assertion
         run: |
           node -e "
             import('./src/audit.js').then(m => {
-              // verify categories sum to 100 by checking maxScore constants
               const cats = [25, 25, 20, 15, 15];
               const sum = cats.reduce((a,b) => a+b, 0);
               if (sum !== 100) { console.error('maxScore sum !== 100:', sum); process.exit(1); }
